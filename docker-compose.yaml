@@ -1,0 +1,26 @@
+services:
+  rag4jiya_vector_database_chroma:
+    image: chromadb/chroma
+    container_name: rag4jiya_vector_database_chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - rag4jiya_vector_database_chroma_volume_data:/chroma/chroma/
+    expose:
+      - 8000
+
+  rag4jiya_backend_pocketbase:
+    build: ./pocketbase
+    container_name: rag4jiya_backend_pocketbase
+    working_dir: /pb
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./pocketbase:/pb
+      - rag4jiya_backend_pocketbase_data_volume:/pb/pb_data
+    expose:
+      - 8000
+
+volumes:
+  rag4jiya_vector_database_chroma_volume_data:
+  rag4jiya_backend_pocketbase_data_volume:

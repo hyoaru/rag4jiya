@@ -1,0 +1,23 @@
+services:
+  rag4jiya_vector_database_chroma:
+    image: chromadb/chroma
+    container_name: rag4jiya_vector_database_chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - rag4jiya_vector_database_chroma_data_volume:/chroma/chroma/
+
+  rag4jiya_database_postgres:
+    image: postgres:17-bookworm
+    container_name: rag4jiya_database_postgres
+    environment:
+      POSTGRES_PASSWORD: rag4jiya
+      POSTGRES_DB: rag4jiya
+    ports:
+      - "5432:5432"
+    volumes:
+      - rag4jiya_database_postgres_data_volume:/var/lib/postgresql/data
+
+volumes:
+  rag4jiya_vector_database_chroma_data_volume:
+  rag4jiya_database_postgres_data_volume:
