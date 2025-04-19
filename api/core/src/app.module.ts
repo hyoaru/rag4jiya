@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { DocumentsModule } from './documents/documents.module';
 import { DocumentTypeModule } from './document-type/document-type.module';
+import { ObjectStorageModule } from './object-storage/object-storage.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DocumentTypeModule } from './document-type/document-type.module';
     AuthenticationModule,
     DocumentsModule,
     DocumentTypeModule,
+    ObjectStorageModule,
   ],
   controllers: [],
   providers: [],
