@@ -6,7 +6,7 @@ import { users } from 'src/users/schema';
 export const documents = pgTable('documents', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: varchar('title', { length: 255 }).notNull(),
-  url: varchar('url', { length: 255 }),
+  filename: varchar('filename', { length: 255 }),
   userId: uuid('user_id').references(() => users.id),
   documentTypeId: uuid('documentTypeId').references(() => documentType.id),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
