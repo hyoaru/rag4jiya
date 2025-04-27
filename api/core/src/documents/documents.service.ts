@@ -4,7 +4,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import { DATABASE_CONNECTION } from 'src/database/database-connection';
 import { ObjectStorageService } from 'src/object-storage/object-storage.service';
 import * as schema from './schema';
@@ -20,7 +20,8 @@ export class DocumentsService {
     private readonly database: NodePgDatabase<typeof schema>,
   ) {}
 
-  async upload(params: UploadDocumentParams) {
+  async create(params: UploadDocumentParams): Promise<Document> {
+    const nanoid = customAlphabet('123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ', 10);
     const sanitizedFilename = `${nanoid()}-${params.file.originalname.replaceAll(' ', '_')}`;
     const bucketPath = `${params.user.id}/${sanitizedFilename}`;
 
@@ -39,13 +40,16 @@ export class DocumentsService {
 
     // Store document data
     try {
-      const document = await this.database.insert(schema.documents).values({
-        title: params.title,
-        filename: sanitizedFilename,
-        userId: params.user.id,
-      });
+      const [record] = await this.database
+        .insert(schema.documents)
+        .values({
+          title: params.title,
+          filename: sanitizedFilename,
+          userId: params.user.id,
+        })
+        .returning();
 
-      return document;
+      return record;
     } catch {
       throw new InternalServerErrorException(
         'An error has occured when saving the document record.',

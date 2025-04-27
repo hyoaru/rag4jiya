@@ -36,14 +36,14 @@ export class DocumentsController {
       },
     }),
   )
-  @ApiResponse({ status: 200, type: String })
+  @ApiResponse({ status: 200, type: DocumentDto })
   @ApiConsumes('multipart/form-data')
   async upload(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadDocumentRequestDto,
     @AuthenticatedUser() user: User,
   ) {
-    await this.documentsService.upload({
+    return await this.documentsService.create({
       file: file,
       title: dto.title,
       user: user,

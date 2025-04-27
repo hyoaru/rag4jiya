@@ -105,9 +105,6 @@ importers:
       '@types/multer':
         specifier: ^1.4.12
         version: 1.4.12
-      '@types/nanoid':
-        specifier: ^3.0.0
-        version: 3.0.0
       '@types/node':
         specifier: ^22.10.7
         version: 22.13.9
@@ -1760,10 +1757,6 @@ packages:
 
   '@types/multer@1.4.12':
     resolution: {integrity: sha512-pQ2hoqvXiJt2FP9WQVLPRO+AmiIm/ZYkavPlIQnx282u4ZrVdztx0pkh3jjpQt0Kz+YI0YhSG264y08UJKoUQg==}
-
-  '@types/nanoid@3.0.0':
-    resolution: {integrity: sha512-UXitWSmXCwhDmAKe7D3hNQtQaHeHt5L8LO1CB8GF8jlYVzOv5cBWDNqiJ+oPEWrWei3i3dkZtHY/bUtd0R/uOQ==}
-    deprecated: This is a stub types definition. nanoid provides its own type definitions, so you do not need this installed.
 
   '@types/node@22.13.9':
     resolution: {integrity: sha512-acBjXdRJ3A6Pb3tqnw9HZmyR3Fiol3aGxRCK1x3d+6CDAMjl7I649wpSd+yNURCjbOUGu9tqtLKnTGxmK6CyGw==}
@@ -6553,10 +6546,6 @@ snapshots:
   '@types/multer@1.4.12':
     dependencies:
       '@types/express': 5.0.0
-
-  '@types/nanoid@3.0.0':
-    dependencies:
-      nanoid: 5.1.5
 
   '@types/node@22.13.9':
     dependencies:
