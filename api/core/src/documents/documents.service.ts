@@ -3,12 +3,14 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { nanoid } from 'nanoid';
-import { ObjectStorageService } from 'src/object-storage/object-storage.service';
-import { UploadDocumentParams } from './types/upload-document-params';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
+import { nanoid } from 'nanoid';
 import { DATABASE_CONNECTION } from 'src/database/database-connection';
+import { ObjectStorageService } from 'src/object-storage/object-storage.service';
 import * as schema from './schema';
+import { Document } from './types/document.entity.type';
+import { FindAllDocumentParams } from './types/find-all-params';
+import { UploadDocumentParams } from './types/upload-document-params';
 
 @Injectable()
 export class DocumentsService {
@@ -49,5 +51,13 @@ export class DocumentsService {
         'An error has occured when saving the document record.',
       );
     }
+  }
+
+  async findAll(params: FindAllDocumentParams): Promise<Document[]> {
+    const records = await this.database.query.documents.findMany({
+      where: (document, { eq }) => eq(document.userId, params.user.id),
+    });
+
+    return records;
   }
 }

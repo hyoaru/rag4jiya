@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   UploadedFile,
   UseGuards,
@@ -13,6 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadDocumentRequestDto } from './dto/upload-document.request.dto';
 import { AuthenticatedUser } from 'src/authentication/decorators/authenticated-user.decorator';
 import { User } from 'src/users/types/user.entity.type';
+import { DocumentDto } from './dto/document.dto';
 
 @Controller('documents')
 export class DocumentsController {
@@ -44,6 +46,16 @@ export class DocumentsController {
     await this.documentsService.upload({
       file: file,
       title: dto.title,
+      user: user,
+    });
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Authentication')
+  @ApiResponse({ status: 200, type: DocumentDto, isArray: true })
+  async findAll(@AuthenticatedUser() user: User) {
+    return await this.documentsService.findAll({
       user: user,
     });
   }
