@@ -20,12 +20,13 @@ export class DocumentsService {
 
   async upload(params: UploadDocumentParams) {
     const sanitizedFilename = `${nanoid()}-${params.file.originalname.replaceAll(' ', '_')}`;
+    const bucketPath = `${params.user.id}/${sanitizedFilename}`;
 
     // Upload document
     try {
       await this.objectStorageService.upload({
         bucket: 'documents',
-        key: sanitizedFilename,
+        key: bucketPath,
         buffer: params.file.buffer,
       });
     } catch {
