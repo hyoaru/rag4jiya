@@ -2,6 +2,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { customAlphabet } from 'nanoid';
@@ -9,8 +10,9 @@ import { DATABASE_CONNECTION } from 'src/database/database-connection';
 import { ObjectStorageService } from 'src/object-storage/object-storage.service';
 import * as schema from './schema';
 import { Document } from './types/document.entity.type';
-import { FindAllDocumentParams } from './types/find-all-params';
+import { FindAllDocumentParams } from './types/find-all-document-params';
 import { UploadDocumentParams } from './types/upload-document-params';
+import { FindOneDocumentParams } from './types/find-one-document-params';
 
 @Injectable()
 export class DocumentsService {
@@ -63,5 +65,17 @@ export class DocumentsService {
     });
 
     return records;
+  }
+
+  async findOne(params: FindOneDocumentParams): Promise<Document> {
+    const record = await this.database.query.documents.findFirst({
+      where: (document, { eq }) => eq(document.id, params.id),
+    });
+
+    if (!record) {
+      throw new NotFoundException('Document not found');
+    }
+
+    return record;
   }
 }

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   UploadedFile,
   UseGuards,
@@ -57,6 +58,16 @@ export class DocumentsController {
   async findAll(@AuthenticatedUser() user: User) {
     return await this.documentsService.findAll({
       user: user,
+    });
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiCookieAuth('Authentication')
+  @ApiResponse({ status: 200, type: DocumentDto })
+  async findOne(@Param('id') id: string) {
+    return await this.documentsService.findOne({
+      id: id,
     });
   }
 }
