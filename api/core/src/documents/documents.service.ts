@@ -19,7 +19,7 @@ export class DocumentsService {
   ) {}
 
   async upload(params: UploadDocumentParams) {
-    const sanitizedFilename = `${nanoid()}_${params.file.originalname}`;
+    const sanitizedFilename = `${nanoid()}-${params.file.originalname.replaceAll(' ', '_')}`;
 
     // Upload document
     try {
