@@ -11,6 +11,8 @@ import { ApiConsumes, ApiCookieAuth, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/authentication/guards/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadDocumentRequestDto } from './dto/upload-document.request.dto';
+import { AuthenticatedUser } from 'src/authentication/decorators/authenticated-user.decorator';
+import { User } from 'src/users/types/user.entity.type';
 
 @Controller('documents')
 export class DocumentsController {
@@ -37,10 +39,12 @@ export class DocumentsController {
   async upload(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: UploadDocumentRequestDto,
+    @AuthenticatedUser() user: User,
   ) {
     await this.documentsService.upload({
       file: file,
       title: dto.title,
+      user: user,
     });
   }
 }
