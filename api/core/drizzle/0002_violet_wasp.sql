@@ -1,0 +1,1 @@
+ALTER TABLE "documents" RENAME COLUMN "url" TO "filename";

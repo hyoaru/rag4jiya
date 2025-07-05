@@ -2,13 +2,10 @@ import { relations, sql } from 'drizzle-orm';
 import { pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 import { documents } from 'src/documents/schema';
 
-export const users = pgTable('users', {
+export const documentType = pgTable('document_type', {
   id: uuid('id').primaryKey().defaultRandom(),
-  firstName: varchar('first_name', { length: 100 }).notNull(),
-  lastName: varchar('last_name', { length: 100 }).notNull(),
-  email: varchar('email', { length: 255 }).notNull().unique(),
-  password: varchar('password', { length: 255 }).notNull(),
-  refreshToken: varchar('refresh_token', { length: 255 }),
+  name: varchar('name', { length: 100 }).notNull(),
+  description: varchar('description', { length: 255 }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
     .defaultNow()
     .notNull(),
@@ -18,6 +15,6 @@ export const users = pgTable('users', {
     .$onUpdate(() => sql`NOW()`),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const documentTypeRelations = relations(documentType, ({ many }) => ({
   documents: many(documents),
 }));

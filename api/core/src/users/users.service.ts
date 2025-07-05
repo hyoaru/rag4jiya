@@ -79,9 +79,7 @@ export class UsersService {
         .returning();
 
       return record;
-    } catch (error: unknown) {
-      console.log(params.data);
-      console.log(error);
+    } catch {
       throw new InternalServerErrorException(
         'An unexpected error occurred while updating the user',
       );
