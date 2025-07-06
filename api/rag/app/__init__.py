@@ -3,12 +3,13 @@ from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
+from .api.routers.health.router import router as health_router
 
 
 def create_app():
     load_dotenv()
 
-    app = FastAPI(docs_url="/")
+    app = FastAPI(title="Rag4Jiya RAG API", docs_url="/api/docs")
     logger.add(
         "./logs/app.log",
         rotation="1 day",
@@ -33,5 +34,7 @@ def create_app():
             f"{request.method} {request.url.path} - {response.status_code} - {process_time:.2f}s"
         )
         return response
+
+    app.include_router(health_router, prefix="/api")
 
     return app
