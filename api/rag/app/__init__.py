@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
-from .api.routers.health.router import router as health_router
+from .routers.health.router import router as health_router
 
 
 def create_app():

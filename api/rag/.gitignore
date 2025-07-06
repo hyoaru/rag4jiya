@@ -14,3 +14,5 @@ app/logs
 
 # Files
 app*.log
+.env
+.env.*

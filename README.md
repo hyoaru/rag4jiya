@@ -162,7 +162,9 @@ sequenceDiagram
 
 ### **RAG API**
 
-- [ ] Add health check
+- [x] Add health check
+- [x] Add vector database repository
+- [x] Add document vector collection service
 - [ ] Integrate ChromaDB for document storage
 - [ ] Implement tokenization and chunking logic
 - [ ] Develop chatbot functionality
