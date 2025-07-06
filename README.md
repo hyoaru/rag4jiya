@@ -164,8 +164,9 @@ sequenceDiagram
 
 - [x] Add health check
 - [x] Add vector database repository
-- [x] Add document vector collection service
-- [ ] Integrate Qdrant for document storage
+- [x] Integrate Qdrant for vector database repository
+- [ ] Add embedding repository
+- [x] Add vector database repository
 - [ ] Implement tokenization and chunking logic
 - [ ] Develop chatbot functionality
 - [ ] Implement similarity search for user queries

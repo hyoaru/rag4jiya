@@ -1,26 +1,27 @@
 import uuid
-from typing import Dict, List, Union, Optional, cast
+from typing import Dict, List, Union, Optional
 
 from loguru import logger
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 
-from .configs import BaseVectorDatabaseConfig, QdrantVectorDatabaseConfig
+from app.common.configs.environment import EnvironmentConfig
 from .interface import VectorDatabaseRepositoryABC
 
 
 class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
     def __init__(self):
-        self._base_config = BaseVectorDatabaseConfig()
-        self._config = QdrantVectorDatabaseConfig()
+        self._environment_config = EnvironmentConfig()
 
         self._vectors_config = VectorParams(
-            size=self._base_config.OPENAI_EMBEDDING_SIZE,
+            size=self._environment_config.OPENAI_EMBEDDING_SIZE,
             distance=Distance.COSINE,
         )
 
     def async_init(self):
-        self._client = AsyncQdrantClient(url=self._config.BASE_URL)
+        self._client = AsyncQdrantClient(
+            url=self._environment_config.QDRANT_BASE_URL,
+        )
 
     async def create_collection(self, name: str):
         is_created = await self._client.create_collection(
