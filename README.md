@@ -154,9 +154,15 @@ sequenceDiagram
 
 ## Progress Checklist
 
+### **Core API**
+
 - [x] Set up database schema
 - [x] Implement user registration and authentication
 - [x] Develop document upload functionality
+
+### **RAG API**
+
+- [ ] Add health check
 - [ ] Integrate ChromaDB for document storage
 - [ ] Implement tokenization and chunking logic
 - [ ] Develop chatbot functionality
