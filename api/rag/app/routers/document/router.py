@@ -33,6 +33,7 @@ async def upload_document(
     docling_document_processor = DoclingDocumentProcessor()
     docling_document = await docling_document_processor.to_docling_document(document)
     document_chunks = docling_document_processor.chunk(docling_document)
+
     return document_chunks
 
     # return {
