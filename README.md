@@ -29,7 +29,7 @@ Rag4Jiya is a chatbot-based knowledge management system designed to empower user
 - **Document Upload**: Users can upload various document types (e.g., transes, handbooks).
 - **Tokenization and Chunking**: Automatically processes uploaded documents for efficient storage and retrieval.
 - **Chat Functionality**: Users can interact with the chatbot to ask questions and receive answers based on their knowledge base.
-- **Similarity Search**: Utilizes ChromaDB to find relevant documents based on user queries.
+- **Similarity Search**: Utilizes vector database to find relevant documents based on user queries.
 
 ## Architecture
 
@@ -58,7 +58,7 @@ graph TD;
 ### RAG API
 
 - **Framework**: FastAPI
-- **Database**: Connected with ChromaDB for vector storage and similarity search.
+- **Vector Database**: Connected with Qdrant for vector storage and similarity search.
 - **Background Processing**: Handles long uploads using background tasks (e.g., Celery or RQ) and a task queue (e.g., Redis).
 - **Tokenization and Chunking**: Processes uploaded documents into manageable chunks for efficient storage and retrieval.
 - **Response Augmentation**: Integrates with the Core API to retrieve relevant documents for user queries.
@@ -74,7 +74,7 @@ graph TD;
 
 1. **Document Upload**: Users upload documents to their knowledge base.
 2. **Tokenization and Chunking**: The system tokenizes and chunks the documents for efficient processing.
-3. **Storage**: Documents are stored using ChromaDB.
+3. **Storage**: Documents are stored using Qdrant.
 4. **User Interaction**: Users navigate to the chat page and ask questions.
 5. **Query Processing**: The system tokenizes the question and performs a similarity search in the knowledge base.
 6. **Response Generation**: The system retrieves 5 relevant references and augments the AI response with these references.
@@ -89,7 +89,7 @@ sequenceDiagram
     participant R as RAG API
     participant D as Database
     participant M as MinIO
-    participant V as ChromaDB
+    participant V as Qdrant
 
     U->>C: Upload Document
     C->>M: Store Document
@@ -164,8 +164,9 @@ sequenceDiagram
 
 - [x] Add health check
 - [x] Add vector database repository
-- [x] Add document vector collection service
-- [ ] Integrate ChromaDB for document storage
-- [ ] Implement tokenization and chunking logic
-- [ ] Develop chatbot functionality
+- [x] Integrate Qdrant for vector database repository
+- [x] Add embedding repository
+- [x] Add vector database repository
+- [x] Implement chunking logic and tokenization
 - [ ] Implement similarity search for user queries
+- [ ] Develop chatbot functionality
