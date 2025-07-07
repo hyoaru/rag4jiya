@@ -18,7 +18,6 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
             distance=Distance.COSINE,
         )
 
-    def async_init(self):
         self._client = AsyncQdrantClient(
             url=self._environment_config.QDRANT_BASE_URL,
         )
@@ -50,9 +49,9 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
     async def upsert_vectors(
         self,
         collection: str,
-        ids: Optional[List[str] | List[None]],
         vectors: List[List[float]],
         metadatas: List[Dict[str, Union[str, int, float, bool, None]]],
+        ids: Optional[List[str] | List[None]] = None,
     ):
         if ids and len(ids) != len(vectors):
             raise ValueError(

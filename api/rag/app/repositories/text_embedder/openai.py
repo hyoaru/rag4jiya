@@ -16,12 +16,12 @@ class OpenAiTextEmbedderRepository(TextEmbedderRepositoryABC):
             input=text,
         )
 
-        return cast(List[float], response.data)
+        return response.data[0].embedding
 
-    async def embed_batch(self, texts: List[str]) -> List[float]:
+    async def embed_batch(self, texts: List[str]) -> List[List[float]]:
         response = await self._client.embeddings.create(
             model=cast(str, self._embedding_model),
             input=texts,
         )
 
-        return cast(List[float], response.data)
+        return [item.embedding for item in response.data]

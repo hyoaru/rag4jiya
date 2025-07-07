@@ -12,5 +12,5 @@ class TextEmbedderRepositoryABC(ABC):
         pass
 
     @abstractmethod
-    async def embed_batch(self, texts: List[str]) -> List[float]:
+    async def embed_batch(self, texts: List[str]) -> List[List[float]]:
         pass

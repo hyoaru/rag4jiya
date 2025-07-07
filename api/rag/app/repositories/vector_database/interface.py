@@ -24,8 +24,8 @@ class VectorDatabaseRepositoryABC(ABC):
     async def upsert_vectors(
         self,
         collection: str,
-        ids: Optional[List[str] | List[None]],
         vectors: List[List[float]],
         metadatas: List[Dict[str, Union[str, int, float, bool, None]]],
+        ids: Optional[List[str] | List[None]] = None,
     ):
         pass

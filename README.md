@@ -165,8 +165,8 @@ sequenceDiagram
 - [x] Add health check
 - [x] Add vector database repository
 - [x] Integrate Qdrant for vector database repository
-- [ ] Add embedding repository
+- [x] Add embedding repository
 - [x] Add vector database repository
-- [ ] Implement tokenization and chunking logic
-- [ ] Develop chatbot functionality
+- [ ] Implement chunking logic and tokenization
 - [ ] Implement similarity search for user queries
+- [ ] Develop chatbot functionality

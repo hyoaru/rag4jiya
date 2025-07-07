@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from .routers.health.router import router as health_router
+from .routers.query.router import router as query_router
+from .routers.document.router import router as document_router
 
 
 def create_app():
@@ -36,5 +38,7 @@ def create_app():
         return response
 
     app.include_router(health_router, prefix="/api")
+    app.include_router(query_router, prefix="/api")
+    app.include_router(document_router, prefix="/api")
 
     return app
