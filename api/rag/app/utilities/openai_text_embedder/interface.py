@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 
-class OpenAiTextEmbedderRepositoryABC(ABC):
+class OpenAiTextEmbedderUtilityABC(ABC):
     @abstractmethod
     def __init__(self, *args, **kwargs):
         pass

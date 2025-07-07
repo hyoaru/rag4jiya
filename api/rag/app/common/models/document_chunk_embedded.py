@@ -2,8 +2,8 @@ from typing import List
 from pydantic import BaseModel
 
 
-class DocumentChunk(BaseModel):
+class DocumentChunkEmbedded(BaseModel):
     heading: str
-    enriched_text: str
-    enriched_text_embedded: List[float]
+    text: str
+    text_embeddings: List[float]
     page_number: int

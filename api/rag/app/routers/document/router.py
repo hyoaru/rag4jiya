@@ -1,8 +1,9 @@
 from typing import Annotated
+
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from app.services.document_vector_collection import DocumentVectorCollectionService
-from app.services.docling_document_processor import DoclingDocumentProcessor
 from loguru import logger
+
+from app.services.document_vector_collection import DocumentVectorCollectionService
 
 router = APIRouter()
 
@@ -30,16 +31,11 @@ async def upload_document(
             detail=f"Invalid file type: {document.content_type}. Only PDF files are allowed.",
         )
 
-    docling_document_processor = DoclingDocumentProcessor()
-    docling_document = await docling_document_processor.to_docling_document(document)
-    document_chunks = docling_document_processor.chunk(docling_document)
+    document_vector_collection_service = DocumentVectorCollectionService()
 
-    return document_chunks
-
-    # return {
-    #     "filename": document.filename,
-    #     "content_type": document.content_type,
-    #     "document_title": document_title,
-    #     "document_type": document_type,
-    #     "user_id": user_id,
-    # }
+    return await document_vector_collection_service.upload_document(
+        user_id=user_id,
+        document=document,
+        document_title=document_title,
+        document_type=document_type,
+    )

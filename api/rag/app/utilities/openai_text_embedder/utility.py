@@ -1,10 +1,10 @@
 from typing import List, cast
 from openai import AsyncOpenAI
 from app.common.configs.environment import EnvironmentConfig
-from .interface import OpenAiTextEmbedderRepositoryABC
+from .interface import OpenAiTextEmbedderUtilityABC
 
 
-class OpenAiTextEmbedderRepository(OpenAiTextEmbedderRepositoryABC):
+class OpenAiTextEmbedderUtility(OpenAiTextEmbedderUtilityABC):
     def __init__(self):
         self._environment_config = EnvironmentConfig()
         self._client = AsyncOpenAI(api_key=self._environment_config.OPENAI_API_KEY)

@@ -1,22 +1,19 @@
 from fastapi import UploadFile
-from app.repositories.text_embedder import (
-    TextEmbedderRepositoryABC,
-    TextEmbedderRepositoryFactory,
-)
+
+from app.common.models.document_chunk_embedded import DocumentChunkEmbedded
 from app.repositories.vector_database import (
     VectorDatabaseRepositoryABC,
     VectorDatabaseRepositoryFactory,
 )
+from app.utilities.docling_document_processor.utility import (
+    DoclingDocumentProcessorUtility,
+)
+from app.utilities.openai_text_embedder.utility import OpenAiTextEmbedderUtility
 
-from .interface import DocumentVectorCollectionServiceABC
 
-
-class DocumentVectorCollectionService(DocumentVectorCollectionServiceABC):
+class DocumentVectorCollectionService:
     def __init__(self):
         self._collection_name = "documents"
-        self._text_embedder_repository: TextEmbedderRepositoryABC = (
-            TextEmbedderRepositoryFactory.create("OPENAI")
-        )
         self._vector_database_repository: VectorDatabaseRepositoryABC = (
             VectorDatabaseRepositoryFactory.create("QDRANT")
         )
@@ -33,11 +30,21 @@ class DocumentVectorCollectionService(DocumentVectorCollectionServiceABC):
         self,
         user_id: str,
         document: UploadFile,
+        document_title: str,
         document_type: str,
     ):
-        await self._vector_database_repository.upsert_vectors(
-            collection=self._collection_name,
-            vectors=[embeddings],
-            metadatas=None,
-        )
-        pass
+        # 1. Convert the file into a docling document
+        docling_document = await DoclingDocumentProcessorUtility.to_docling(document)
+
+        # 2. Chunk the document
+        document_chunks = DoclingDocumentProcessorUtility.chunk(docling_document)
+
+        # 3. Embed the enriched text from the chunks
+        texts = [chunk.text for chunk in document_chunks]
+        embedded_texts = await OpenAiTextEmbedderUtility().embed_batch(texts)
+        embedded_document_chunks = [
+            DocumentChunkEmbedded(**chunk.model_dump(), text_embeddings=text_embeddings)
+            for chunk, text_embeddings in zip(document_chunks, embedded_texts)
+        ]
+
+        return embedded_document_chunks
