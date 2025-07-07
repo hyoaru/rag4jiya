@@ -1,9 +1,11 @@
 from fastapi import UploadFile
 
-from app.common.models.document_chunk_embedded import DocumentChunkEmbedded
 from app.repositories.vector_database import (
     VectorDatabaseRepositoryABC,
     VectorDatabaseRepositoryFactory,
+)
+from app.services.document_vector_collection.models.document_chunk_metadata import (
+    DocumentChunkMetadata,
 )
 from app.utilities.docling_document_processor.utility import (
     DoclingDocumentProcessorUtility,
@@ -30,21 +32,36 @@ class DocumentVectorCollectionService:
         self,
         user_id: str,
         document: UploadFile,
+        document_id: str,
         document_title: str,
         document_type: str,
     ):
         # 1. Convert the file into a docling document
         docling_document = await DoclingDocumentProcessorUtility.to_docling(document)
 
-        # 2. Chunk the document
-        document_chunks = DoclingDocumentProcessorUtility.chunk(docling_document)
+        # 2. Chunk the document to lists for vector database to consume
+        chunks = DoclingDocumentProcessorUtility.chunk_to_lists(docling_document)
 
         # 3. Embed the enriched text from the chunks
-        texts = [chunk.text for chunk in document_chunks]
-        embedded_texts = await OpenAiTextEmbedderUtility().embed_batch(texts)
-        embedded_document_chunks = [
-            DocumentChunkEmbedded(**chunk.model_dump(), text_embeddings=text_embeddings)
-            for chunk, text_embeddings in zip(document_chunks, embedded_texts)
+        text_embeddings = await OpenAiTextEmbedderUtility().embed_batch(chunks.texts)
+        metadatas = [
+            DocumentChunkMetadata(
+                user_id=user_id,
+                document_id=document_id,
+                document_type=document_type,
+                document_title=document_title,
+                heading=heading,
+                content=text,
+                page_number=page_number,
+            ).model_dump()
+            for text, page_number, heading in zip(
+                chunks.texts, chunks.page_numbers, chunks.headings
+            )
         ]
 
-        return embedded_document_chunks
+        # 4. Upload to Qdrant
+        await self._vector_database_repository.upsert_vectors(
+            collection=self._collection_name,
+            vectors=text_embeddings,
+            metadatas=metadatas,
+        )

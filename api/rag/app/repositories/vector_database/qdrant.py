@@ -26,7 +26,6 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
         is_created = await self._client.create_collection(
             collection_name=name,
             vectors_config=self._vectors_config,
-            exist_ok=True,
         )
 
         if not is_created:
@@ -69,4 +68,9 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
             for provided_id, vector, metadata in zip(ids, vectors, metadatas)
         ]
 
-        await self._client.upsert(collection_name=collection, points=points)
+        try:
+            await self._client.upsert(collection_name=collection, points=points)
+        except Exception as e:
+            raise ValueError(
+                f"Failed to upsert vectors into collection `{collection}`: {e}"
+            ) from e
