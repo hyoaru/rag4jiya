@@ -1,12 +1,22 @@
 import uuid
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Optional, Union
 
 from loguru import logger
 from qdrant_client import AsyncQdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
+from qdrant_client.models import (
+    Condition,
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    VectorParams,
+)
 
 from app.common.configs.environment import EnvironmentConfig
+
 from .interface import VectorDatabaseRepositoryABC
+from .models import VectorSearchResult
 
 
 class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
@@ -35,15 +45,47 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
 
     async def search_collection(
         self,
-        name: str,
+        collection: str,
         query_vector: List[float],
+        metadatas: Optional[Dict[str, Union[str, int, bool]]] = None,
         top_n: int = 3,
-    ):
-        return await self._client.search(
-            collection_name=name,
+    ) -> List[VectorSearchResult]:
+        query_filter = None
+
+        if metadatas:
+            conditions: List[Condition] = [
+                FieldCondition(
+                    key=k,
+                    match=MatchValue(value=v),
+                )
+                for k, v in metadatas.items()
+            ]
+
+            query_filter = Filter(must=conditions)
+
+        search_results = await self._client.search(
+            collection_name=collection,
             query_vector=query_vector,
-            top=top_n,
+            limit=top_n,
+            with_payload=True,
+            query_filter=query_filter,
         )
+
+        processed_search_results = []
+        for result in search_results:
+            result_map = result.model_dump()
+            processed_search_results.append(
+                VectorSearchResult(
+                    id=result_map["id"],
+                    score=result_map["score"],
+                    content=result_map["payload"]["content"],
+                    metadata={
+                        k: v for k, v in result_map["payload"].items() if k != "content"
+                    },
+                )
+            )
+
+        return processed_search_results
 
     async def upsert_vectors(
         self,

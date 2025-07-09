@@ -26,7 +26,12 @@ class DocumentVectorCollectionService:
         )
 
     async def similarity_search_across_documents(self, user_id: str, text: str):
-        pass
+        query_vector = await OpenAiTextEmbedderUtility().embed(text)
+        return await self._vector_database_repository.search_collection(
+            collection=self._collection_name,
+            query_vector=query_vector,
+            metadatas={"user_id": user_id},
+        )
 
     async def upload_document(
         self,

@@ -168,5 +168,5 @@ sequenceDiagram
 - [x] Add embedding repository
 - [x] Add vector database repository
 - [x] Implement chunking logic and tokenization
-- [ ] Implement similarity search for user queries
-- [ ] Develop chatbot functionality
+- [x] Implement similarity search for user queries
+- [ ] Develop AI agent to augment the results

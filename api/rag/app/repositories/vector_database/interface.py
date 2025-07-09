@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Any, Dict, Union, Optional
+from typing import List, Dict, Union, Optional
+
+from .models import VectorSearchResult
 
 
 class VectorDatabaseRepositoryABC(ABC):
@@ -10,10 +12,11 @@ class VectorDatabaseRepositoryABC(ABC):
     @abstractmethod
     async def search_collection(
         self,
-        name: str,
+        collection: str,
         query_vector: List[float],
+        metadatas: Optional[Dict[str, Union[str, int, bool]]] = None,
         top_n: int = 3,
-    ) -> Any:
+    ) -> List[VectorSearchResult]:
         pass
 
     @abstractmethod
