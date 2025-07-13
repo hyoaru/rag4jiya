@@ -18,6 +18,7 @@ from app.utilities.docling_document_processor.models.document_chunked_to_list im
 class DoclingDocumentProcessorUtility:
     @staticmethod
     async def to_docling(document: UploadFile):
+        # Configure PDF parsing options
         pipeline_options = PdfPipelineOptions()
         pipeline_options.do_ocr = False
         pipeline_options.do_table_structure = True
@@ -31,6 +32,7 @@ class DoclingDocumentProcessorUtility:
             }
         )
 
+        # Save upload to temporary file for Docling to process
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=True) as tmp:
             tmp.write(await document.read())
             tmp_path = tmp.name
@@ -41,26 +43,25 @@ class DoclingDocumentProcessorUtility:
 
     @staticmethod
     def chunk(dl_document: DoclingDocument):
+        # Chunk the document into logical parts
         chunker = HybridChunker()
         chunks = list(chunker.chunk(dl_doc=dl_document))
 
         def process_chunk(chunk):
             metadata = chunk.meta.export_json_dict()
-            document_chunk = DocumentChunk(
+            return DocumentChunk(
                 heading=metadata["headings"][0],
                 text=chunker.contextualize(chunk=chunk),
                 page_number=metadata["doc_items"][0]["prov"][0]["page_no"],
             )
 
-            return document_chunk
-
+        # Parallel chunk processing
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            processed_document_chunks = list(executor.map(process_chunk, chunks))
-
-        return processed_document_chunks
+            return list(executor.map(process_chunk, chunks))
 
     @staticmethod
     def chunk_to_lists(dl_document: DoclingDocument):
+        # Similar to `chunk()` but returns structured lists
         chunker = HybridChunker()
         chunks = list(chunker.chunk(dl_doc=dl_document))
 
@@ -74,7 +75,6 @@ class DoclingDocumentProcessorUtility:
         with concurrent.futures.ThreadPoolExecutor() as executor:
             processed = list(executor.map(process_chunk, chunks))
 
-        # Unpack into separate lists
         headings, texts, page_numbers = zip(*processed) if processed else ([], [], [])
 
         return DocumentChunkedToList(

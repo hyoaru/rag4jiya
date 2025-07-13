@@ -170,5 +170,5 @@ sequenceDiagram
 - [x] Implement chunking logic and tokenization
 - [x] Implement similarity search for user queries
 - [x] Develop AI agent to augment the results
-- [ ] Fix logging
+- [x] Fix logging
 - [ ] Add dependency injection

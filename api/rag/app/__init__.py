@@ -1,23 +1,23 @@
 import time
+
 from fastapi import FastAPI, Request
-from dotenv import load_dotenv
 from fastapi.middleware.cors import CORSMiddleware
-from loguru import logger
+
+from app.utilities.custom_logger import CustomLogger
+
+from .routers.document.router import router as document_router
 from .routers.health.router import router as health_router
 from .routers.query.router import router as query_router
-from .routers.document.router import router as document_router
 
 
 def create_app():
-    load_dotenv()
+    CustomLogger.setup_logging()
+    logger = CustomLogger.get_instance()
 
-    app = FastAPI(title="Rag4Jiya RAG API", docs_url="/api/docs")
-    logger.add(
-        "./logs/app.log",
-        rotation="1 day",
-        retention="7 days",
-        level="INFO",
-        format="[{time:YYYY-MM-DD HH:mm:ss}] [{level}] - {message}",
+    app = FastAPI(
+        title="Rag4Jiya RAG API",
+        docs_url="/docs",
+        redoc_url="/redoc",
     )
 
     app.add_middleware(
