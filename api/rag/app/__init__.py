@@ -18,8 +18,8 @@ def create_app():
 
     app = FastAPI(
         title="Rag4Jiya RAG API",
-        docs_url="/api/docs",
-        redocs="/api/redoc",
+        docs_url="/docs",
+        redoc_url="/redoc",
     )
 
     app.add_middleware(

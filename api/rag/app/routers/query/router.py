@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from app.services.clinical_insight_agent.service import ClinicalInsightAgentService
 
-
 from .models import QueryRequest
 
 router = APIRouter()
