@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 from loguru import logger
 
+from app.common.models import DocumentType
 from app.services.document_vector_collection import DocumentVectorCollectionService
 from .models import DocumentUploadResponse
 
@@ -18,7 +19,7 @@ async def upload_document(
     document: Annotated[UploadFile, File()],
     document_id: Annotated[str, Form()],
     document_title: Annotated[str, Form()],
-    document_type: Annotated[str, Form()],
+    document_type: Annotated[DocumentType, Form()],
     user_id: Annotated[str, Form()],
 ):
     log_context = {

@@ -1,5 +1,6 @@
 from fastapi import UploadFile
 
+from app.common.models import DocumentType
 from app.repositories.vector_database import (
     VectorDatabaseRepositoryABC,
     VectorDatabaseRepositoryFactory,
@@ -25,12 +26,14 @@ class DocumentVectorCollectionService:
             name=self._collection_name
         )
 
-    async def similarity_search_across_documents(self, user_id: str, text: str):
+    async def similarity_search_across_documents(
+        self, user_id: str, document_type: DocumentType, text: str
+    ):
         query_vector = await OpenAiTextEmbedderUtility().embed(text)
         return await self._vector_database_repository.search_collection(
             collection=self._collection_name,
             query_vector=query_vector,
-            metadatas={"user_id": user_id},
+            metadatas={"user_id": user_id, "document_type": document_type.value},
         )
 
     async def upload_document(
@@ -39,7 +42,7 @@ class DocumentVectorCollectionService:
         document: UploadFile,
         document_id: str,
         document_title: str,
-        document_type: str,
+        document_type: DocumentType,
     ):
         # 1. Convert the file into a docling document
         docling_document = await DoclingDocumentProcessorUtility.to_docling(document)

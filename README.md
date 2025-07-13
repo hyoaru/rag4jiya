@@ -169,4 +169,6 @@ sequenceDiagram
 - [x] Add vector database repository
 - [x] Implement chunking logic and tokenization
 - [x] Implement similarity search for user queries
-- [ ] Develop AI agent to augment the results
+- [x] Develop AI agent to augment the results
+- [ ] Fix logging
+- [ ] Add dependency injection

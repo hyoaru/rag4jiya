@@ -12,6 +12,7 @@ class EnvironmentConfig(BaseSettings):
     QDRANT_BASE_URL: Optional[str] = Field(default=None)
     OPENAI_API_KEY: Optional[str] = Field(default=None)
     OPENAI_EMBEDDING_MODEL: Optional[str] = Field(default=None)
+    OPENAI_INFERENCE_MODEL: Optional[str] = Field(default=None)
 
     @property
     def OPENAI_EMBEDDING_SIZE(self) -> int:
@@ -32,6 +33,7 @@ class EnvironmentConfig(BaseSettings):
         "QDRANT_BASE_URL",
         "OPENAI_API_KEY",
         "OPENAI_EMBEDDING_MODEL",
+        "OPENAI_INFERENCE_MODEL",
         mode="after",
     )
     def check_required(cls, v, info):
