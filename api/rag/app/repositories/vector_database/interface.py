@@ -28,7 +28,7 @@ class VectorDatabaseRepositoryABC(ABC):
         self,
         collection: str,
         vectors: List[List[float]],
-        metadatas: List[Dict[str, Union[str, int, float, bool, None]]],
+        metadatas: List[Dict[str, Union[str, int, bool]]],
         ids: Optional[List[str] | List[None]] = None,
     ):
         pass

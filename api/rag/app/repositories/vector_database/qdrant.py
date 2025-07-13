@@ -1,5 +1,6 @@
 import uuid
-from typing import Dict, List, Optional, Union
+from itertools import repeat
+from typing import List, Optional
 
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import (
@@ -20,46 +21,44 @@ from .models import VectorSearchResult
 
 class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
     def __init__(self):
+        # Initialize vector database connection and vector configuration
         self._environment_config = EnvironmentConfig()
-
         self._vectors_config = VectorParams(
             size=self._environment_config.OPENAI_EMBEDDING_SIZE,
             distance=Distance.COSINE,
         )
-
         self._client = AsyncQdrantClient(
             url=self._environment_config.QDRANT_BASE_URL,
         )
 
     async def create_collection(self, name: str):
+        # Create a new Qdrant collection if it doesn't already exist
         is_created = await self._client.create_collection(
             collection_name=name,
             vectors_config=self._vectors_config,
         )
-
         if not is_created:
             raise ValueError(f"Failed to create collection: {name}")
 
     async def search_collection(
         self,
-        collection: str,
-        query_vector: List[float],
-        metadatas: Optional[Dict[str, Union[str, int, bool]]] = None,
-        top_n: int = 3,
-    ) -> List[VectorSearchResult]:
-        query_filter = None
-
+        collection,
+        query_vector,
+        metadatas=None,
+        top_n=3,
+    ):
+        # Optional metadata filter construction
+        query_filter: Optional[Filter] = None
         if metadatas:
             conditions: List[Condition] = [
-                FieldCondition(
-                    key=k,
-                    match=MatchValue(value=v),
-                )
+                FieldCondition(key=k, match=MatchValue(value=v))
                 for k, v in metadatas.items()
+                if isinstance(v, (str, int, bool))
             ]
+            if conditions:
+                query_filter = Filter(must=conditions)
 
-            query_filter = Filter(must=conditions)
-
+        # Perform vector similarity search
         search_results = await self._client.search(
             collection_name=collection,
             query_vector=query_vector,
@@ -68,6 +67,7 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
             query_filter=query_filter,
         )
 
+        # Map Qdrant results to domain DTOs
         processed_search_results = []
         for result in search_results:
             result_map = result.model_dump()
@@ -81,23 +81,19 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
                     },
                 )
             )
-
         return processed_search_results
 
-    async def upsert_vectors(
-        self,
-        collection: str,
-        vectors: List[List[float]],
-        metadatas: List[Dict[str, Union[str, int, float, bool, None]]],
-        ids: Optional[List[str] | List[None]] = None,
-    ):
+    async def upsert_vectors(self, collection, vectors, metadatas, ids=None):
+        # Ensure provided IDs match vector count (if given)
         if ids and len(ids) != len(vectors):
             raise ValueError(
                 f"Length of ids ({len(ids)}) does not match length of vectors ({len(vectors)})"
             )
 
-        ids = ids or [None] * len(vectors)
+        # Use UUIDs if no IDs provided
+        ids = ids or repeat(None, len(vectors))
 
+        # Prepare points for upsert
         points = [
             PointStruct(
                 id=provided_id if provided_id else str(uuid.uuid4()),
@@ -107,6 +103,7 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
             for provided_id, vector, metadata in zip(ids, vectors, metadatas)
         ]
 
+        # Upsert into Qdrant
         try:
             await self._client.upsert(collection_name=collection, points=points)
         except Exception as e:
