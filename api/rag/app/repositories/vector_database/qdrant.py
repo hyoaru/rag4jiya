@@ -1,7 +1,6 @@
 import uuid
 from typing import Dict, List, Optional, Union
 
-from loguru import logger
 from qdrant_client import AsyncQdrantClient
 from qdrant_client.models import (
     Condition,
@@ -40,8 +39,6 @@ class QdrantVectorDatabaseRepository(VectorDatabaseRepositoryABC):
 
         if not is_created:
             raise ValueError(f"Failed to create collection: {name}")
-        else:
-            logger.info(f"Created collection: {name}")
 
     async def search_collection(
         self,

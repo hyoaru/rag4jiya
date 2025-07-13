@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "disable_existing_loggers": false,
+  "formatters": {
+    "simple": {
+      "format": "[%(levelname)s|%(module)s|L%(lineno)d] %(asctime)s: %(message)s"
+    },
+    "json": {
+      "class": "pythonjsonlogger.json.JsonFormatter",
+      "format": "[%(levelname)s|%(module)s|L%(lineno)d] %(asctime)s: %(message)s"
+    }
+  },
+  "filters": {
+    "ignore_change_detected": {
+      "()": "app.custom_logging.filters.IgnoreChangeDetected"
+    }
+  },
+  "handlers": {
+    "stderr": {
+      "class": "logging.StreamHandler",
+      "level": "WARNING",
+      "formatter": "simple",
+      "stream": "ext://sys.stderr"
+    },
+    "file_json": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "level": "DEBUG",
+      "formatter": "json",
+      "filename": "logs/app.log.jsonl",
+      "maxBytes": 10485760,
+      "backupCount": 3,
+      "filters": ["ignore_change_detected"]
+    },
+    "queue": {
+      "class": "logging.handlers.QueueHandler",
+      "handlers": ["stderr", "file_json"],
+      "respect_handler_level": true
+    }
+  },
+  "loggers": {
+    "root": { "level": "DEBUG", "handlers": ["queue"] }
+  }
+}

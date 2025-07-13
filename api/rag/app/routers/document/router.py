@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
-from loguru import logger
 
 from app.common.models import DocumentType
 from app.services.document_vector_collection import DocumentVectorCollectionService
@@ -29,8 +28,6 @@ async def upload_document(
         "file_name": document.filename,
         "file_size_bytes": document.size,
     }
-
-    logger.bind(**log_context).info("Received upload request")
 
     if document.content_type != "application/pdf":
         raise HTTPException(
