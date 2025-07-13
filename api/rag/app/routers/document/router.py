@@ -4,9 +4,11 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
 
 from app.common.models import DocumentType
 from app.services.document_vector_collection import DocumentVectorCollectionService
+from app.utilities.custom_logger import CustomLogger
 from .models import DocumentUploadResponse
 
 router = APIRouter()
+logger = CustomLogger.get_instance()
 
 
 @router.post(
@@ -28,6 +30,8 @@ async def upload_document(
         "file_name": document.filename,
         "file_size_bytes": document.size,
     }
+
+    logger.info("Document upload request received", extra=log_context)
 
     if document.content_type != "application/pdf":
         raise HTTPException(
@@ -52,13 +56,13 @@ async def upload_document(
         )
 
     except ValueError as e:
-        logger.bind(**log_context).warning(f"Upload failed: {e}")
+        logger.warning(f"Upload failed: {e}", extra=log_context)
         raise HTTPException(status_code=422, detail=str(e))
 
     except RuntimeError as e:
-        logger.bind(**log_context).error(f"Embedding/vector DB error: {e}")
+        logger.error(f"Embedding/vector DB error: {e}", extra=log_context)
         raise HTTPException(status_code=502, detail=str(e))
 
     except Exception as e:
-        logger.bind(**log_context).exception(f"Unexpected error during upload: {e}")
+        logger.exception(f"Unexpected error during upload: {e}", extra=log_context)
         raise HTTPException(status_code=500, detail="Internal server error")

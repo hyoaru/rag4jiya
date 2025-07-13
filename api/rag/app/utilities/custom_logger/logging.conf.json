@@ -12,7 +12,7 @@
   },
   "filters": {
     "ignore_change_detected": {
-      "()": "app.custom_logging.filters.IgnoreChangeDetected"
+      "()": "app.utilities.custom_logger.filters.IgnoreChangeDetected"
     }
   },
   "handlers": {
@@ -35,9 +35,13 @@
       "class": "logging.handlers.QueueHandler",
       "handlers": ["stderr", "file_json"],
       "respect_handler_level": true
+    },
+    "null": {
+      "class": "logging.NullHandler"
     }
   },
   "loggers": {
-    "root": { "level": "DEBUG", "handlers": ["queue"] }
+    "root": { "level": "DEBUG", "handlers": ["null"] },
+    "app": { "level": "DEBUG", "handlers": ["queue"] }
   }
 }
