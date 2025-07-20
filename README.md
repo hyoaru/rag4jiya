@@ -171,4 +171,4 @@ sequenceDiagram
 - [x] Implement similarity search for user queries
 - [x] Develop AI agent to augment the results
 - [x] Fix logging
-- [ ] Add dependency injection
+- [ ] Add request context on query

@@ -1,11 +1,10 @@
 from fastapi import UploadFile
 
-from app.common.models import DocumentType
+from app.common.models import DocumentType, DocumentChunkMetadata
 from app.repositories.vector_database import (
     VectorDatabaseRepositoryABC,
     VectorDatabaseRepositoryFactory,
 )
-from app.services.document_vector_collection.models import DocumentChunkMetadata
 from app.utilities.docling_document_processor import DoclingDocumentProcessorUtility
 from app.utilities.text_embedder import TextEmbedderUtilityFactory
 
@@ -25,14 +24,12 @@ class DocumentVectorCollectionService:
             name=self._collection_name
         )
 
-    async def similarity_search_across_documents(
-        self, user_id: str, document_type: DocumentType, text: str
-    ):
+    async def search(self, user_id: str, document_type: DocumentType, text: str):
         # Embed the input query text
         query_vector = await self._text_embedder.embed(text)
 
         # Search for similar document chunks
-        return await self._vector_database_repository.search_collection(
+        result = await self._vector_database_repository.search_collection(
             collection=self._collection_name,
             query_vector=query_vector,
             metadatas={"user_id": user_id, "document_type": document_type.value},
@@ -53,7 +50,7 @@ class DocumentVectorCollectionService:
         chunks = DoclingDocumentProcessorUtility.chunk_to_lists(docling_document)
 
         # Generate embeddings for each chunk
-        text_embeddings = await OpenAiTextEmbedderUtility().embed_batch(chunks.texts)
+        text_embeddings = await self._text_embedder.embed_batch(chunks.texts)
 
         # Prepare metadata for each chunk
         metadatas = [
